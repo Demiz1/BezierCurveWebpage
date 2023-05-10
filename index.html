@@ -1,0 +1,49 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <title>A Basic HTML5 Template</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A simple HTML5 Template for new projects.">
+  <meta name="author" content="SitePoint">
+
+  <meta property="og:title" content="A Basic HTML5 Template">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.sitepoint.com/a-basic-html5-template/">
+  <meta property="og:description" content="A simple HTML5 Template for new projects.">
+  <meta property="og:image" content="image.png">
+
+  <link rel="icon" href="/favicon.ico">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+  <link rel="stylesheet" href="css/styles.css?v=1.0">
+
+</head>
+
+<body>
+  <!-- your content here... -->
+  <div id="mainBody">
+    <h1>
+        This is a webpage that creates a bezier curve, in a canvas from your points
+    </h1>
+    <div class="center">
+        <div class="topNavCanvas">
+            <button class="rowElements" onclick="removeBezierPoints()">Reset</button>
+            <button class="rowElements" onclick="refreshCanvas()">Generate bezier curve</button>
+            <input type="checkbox" id="subsetVisibilityEnabled" name="subsetVisibilityEnabled"><label>Enable control point+lines visabilty</label>
+            <div class="slidecontainer rowElements">
+              <input type="range" min="0" max="1" value="0.5" step="0.005" class="slider" id="progressRange">
+            </div>
+        </div>
+        
+        <canvas id="canvas" width="2000" height="1000">
+
+        </canvas>
+    </div>
+    
+  </div>
+  <script src="js/scripts.js"></script>
+</body>
+</html>

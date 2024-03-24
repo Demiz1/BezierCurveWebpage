@@ -1,90 +1,127 @@
-export class Car{
+import { Position } from "./Position.js";
+export class Car {
+  /**
+   * @type {Position} position of the car
+   * @type {Function} dataChangedCallback
+   */
+  #position = new Position(0, 0, 0);
+  #dataChangedCallback = function () { }
 
-    /**
-     * @param {canvas} canvas the canvas to paint on
-     * @param {bicycleMotionModel} motionModel 
-     * @param {String} imagePath
-     */
-    constructor(canvas,motionModel,imagePath){
-    
-      this.canvas = canvas;
-      this.motionModel = motionModel;
-      this.base_image = new Image();
-      this.base_image.src = imagePath;
-      this.x = function() {return this.motionModel.x}
-      this.y = function() {return this.motionModel.y}
-      this.yaw = function() {return this.motionModel.yaw}
-    }
+  /**
+   * @param {canvas} canvas the canvas to paint on
+   * @param {String} imagePath
+   */
+  constructor(canvas, imagePath, initialPosition = Position(0, 0, 0)) {
 
-    /**
-     * @param {Function} callback
-     */
-    onImageLoadComplete(callback){
-        this.base_image.onload = () => {
-            callback()
-          }
-    }
-  
-    carStep(...args){
-      this.motionModel.step(...args)
-    }
-  
-    paint(){
-      this.canvas.setTransform(Math.cos(this.yaw()),Math.sin(this.yaw()),-Math.sin(this.yaw()),Math.cos(this.yaw()),this.x(),this.y());
-      this.paintCar()
-      this.canvas.resetTransform();
-    }
-  
-    paintCar(){
-      let scaleFactor = 0.1;
-      this.canvas.drawImage(
-        this.base_image,
-        -this.base_image.width*scaleFactor/2,
-        -this.base_image.height*scaleFactor*0.90,
-        (this.base_image.width*scaleFactor),
-        (this.base_image.height*scaleFactor)
-      )
-      
-    }
+    this.canvas = canvas;
+    this.base_image = new Image();
+    this.base_image.src = imagePath;
+    this.#position = initialPosition;
 
-    restOfPaint(){
-        //LookaheadRadie
-      let Lradie = 200;
-      let circle = new Path2D();
-      circle.arc(0, 0, Lradie, 0, 2 * Math.PI);
-      this.canvas.stroke(circle);
-      // R point
-      //let ICR = -300;
-      circle = new Path2D();
-      this.canvas.fillStyle = 'yellow';
-      circle.arc(ICR, 0, 20, 0, 2 * Math.PI);
-      this.canvas.fill(circle);
-      // R baseLine
-      this.canvas.beginPath(); // Start a new path
-      this.canvas.moveTo(0, 0); // Move the pen to (30, 50)
-      this.canvas.lineTo(ICR, 0); // Draw a line to (150, 100)
-      this.canvas.stroke();
-      // R AngleAnchor
-      this.canvas.beginPath(); // Start a new path
-      this.canvas.moveTo(0, 0); // Move the pen to (30, 50)
-      this.canvas.lineTo(ICR, 0); // Draw a line to (150, 100)
-      this.canvas.stroke();
-      // R value
-      
-      // Turn Arc
-      let circle2 = new Path2D();
-      let arcRadian = 2*Math.asin(Lradie/2/Math.abs(ICR))
-      let turnAngle = Math.PI/2 - (Math.PI - arcRadian)/2
-      if(ICR>0){
-        circle2.arc(ICR, 0, Math.abs(ICR), Math.PI,Math.PI+arcRadian);
-      }else{
-        circle2.arc(ICR, 0, Math.abs(ICR), -arcRadian, 0);
-      }
-      let oldStyle = this.canvas.strokeStyle
-      this.canvas.strokeStyle = 'red';
-      this.canvas.stroke(circle2);
-      this.canvas.strokeStyle = oldStyle;
-      this.canvas.font = "30px serif";
-      this.canvas.strokeText("TurnAngle:" + Math.round(turnAngle/Math.PI*180), -100, 60)
+    this.base_image.onload = () => {
+      this.#dataChangedCallback()
     }
   }
+
+  /**
+   * @param {Function} callback
+   */
+  setDataChangedCallback(callback) {
+    this.#dataChangedCallback = callback;
+  }
+
+  /**
+   * 
+   * @returns {Position}
+   */
+  getPosition() {
+    return this.#position;
+  }
+
+  /**
+   * update the position of the car
+   * @param {Position} newPos 
+   */
+  setPosition(newPos) {
+    this.#position = newPos
+    this.#dataChangedCallback()
+  }
+
+  paint() {
+    this.canvas.setTransform(
+      Math.cos(this.#position.yaw),
+      Math.sin(this.#position.yaw),
+      -Math.sin(this.#position.yaw),
+      Math.cos(this.#position.yaw),
+      this.#position.x,
+      this.#position.y
+    );
+    this.paintCar()
+    this.canvas.resetTransform();
+  }
+
+  paintCar() {
+    let scaleFactor = 0.1;
+    this.canvas.drawImage(
+      this.base_image,
+      -this.base_image.width * scaleFactor / 2,
+      -this.base_image.height * scaleFactor * 0.90,
+      (this.base_image.width * scaleFactor),
+      (this.base_image.height * scaleFactor)
+    )
+
+  }
+}
+
+export class CarKeyboardController {
+
+  /**
+   * @param {Boolean} w
+   * @param {Boolean} a
+   * @param {Boolean} s
+   * @param {Boolean} d
+   */
+  w = false;
+  a = false;
+  s = false;
+  d = false;
+  
+  constructor(carInstance) {
+    this.carInstance = carInstance;
+  }
+
+  /**
+   * @param {KeyboardEvent} event 
+   */
+  keyboardEvent(event){
+    let turn = 0
+    let drive = 0
+
+    console.log(event.key)
+  
+    if(event.key.includes("w")){
+      drive += 10;
+    }
+    if(event.key.includes("a")){
+      turn -= Math.PI/70;
+    }
+    if(event.key.includes("s")){
+      drive -= 10;
+    }
+    if(event.key.includes("d")){
+      turn += Math.PI/70;
+    }
+    this.drive(turn,drive)
+  }
+
+  /**
+   * @param {Number} turnAmout
+   * @param {Number} driveDistance
+   */
+  drive(turnAmout, driveDistance) {
+    let newx = this.carInstance.getPosition().x + Math.sin(this.carInstance.getPosition().yaw) * driveDistance
+    let newy = this.carInstance.getPosition().y + -Math.cos(this.carInstance.getPosition().yaw) * driveDistance
+    let newYaw = this.carInstance.getPosition().yaw + turnAmout;
+    this.carInstance.setPosition(new Position(newx, newy, newYaw))
+  }
+}

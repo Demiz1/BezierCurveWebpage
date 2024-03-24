@@ -45,7 +45,7 @@ export class BezierCurve{
         if(this.#anchorPoints.length<2) return;
 
         // this should not be a constant. It should increase the progress untill a distance threashold, and only then save the new set.
-        const pointsResolution = 1000
+        const pointsResolution = 20
         let newCurvePoints = [];
         let array = [];
         for(let i=0;i<pointsResolution;i++){

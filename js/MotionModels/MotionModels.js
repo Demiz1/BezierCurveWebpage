@@ -23,4 +23,28 @@ export class BicycleModel{
       this.x = this.x + this.v * Math.sin(this.yaw) * t
       this.y = this.y + this.v * -Math.cos(this.yaw) * t
     }
+
+    /**
+     * @param {Number} t timestep in sec (you probably want something low like 0.001)
+     * @param {Number} a m/s^2
+     * @param {Number} yaw radians
+     */
+    step(t,a,yaw){
+      this.v = this.v + a*t
+      this.yaw = yaw
+      this.x = this.x + this.v * Math.sin(this.yaw) * t
+      this.y = this.y + this.v * -Math.cos(this.yaw) * t
+    }
+
+    /**
+     * @param {Number} t timestep in sec (you probably want something low like 0.001)
+     * @param {Number} v m/s
+     * @param {Number} yaw radians
+     */
+    step(t,v,yaw){
+      this.v = v
+      this.yaw = yaw
+      this.x = this.x + this.v * Math.sin(this.yaw) * t
+      this.y = this.y + this.v * -Math.cos(this.yaw) * t
+    }
 }

@@ -23,7 +23,6 @@
 </head>
 
 <body>
-  <!-- your content here... -->
   <div id="mainBody">
     <h1>
         This webpage lets you define a curve which a car attempts to follow.
@@ -33,16 +32,19 @@
       <div class="topNavCanvas">
             <button id="resetButton" class="rowElements">Reset</button>
             <button id="ResetBezierCurve" class="rowElements">Reset bezier curve</button>
-            <input type="checkbox" id="subsetVisibilityEnabled" name="subsetVisibilityEnabled"><label>Enable control point+lines visabilty</label>
             <div class="slidecontainer rowElements">
-              <input type="range" min="-1000" max="1000" value="200" step="20" class="slider" id="progressRange">
+              <input type="range" min="0" max="100" value="20" step="0.1" class="slider" id="progressRange">
             </div>
             <div class="slidecontainer rowElements">
               <input type="input" value="100" id="stepSelection">
               <button onclick="stepForward()">Run steps</button>
               <button onclick="toggleAutoRun()">Toggle</button>
             </div>
-        </div>        
+            <div class="slidecontainer rowElements">
+              <input type="checkbox" id="Checkbox1"><label>Enable control point+lines visabilty</label>
+              <input type="checkbox" id="Checkbox2"><label>setPositionOfCar</label>
+            </div>
+        </div>
     </div>
     
   </div>

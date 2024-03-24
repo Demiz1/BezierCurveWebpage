@@ -5,13 +5,13 @@
   <title>A Basic HTML5 Template</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="A simple HTML5 Template for new projects.">
-  <meta name="author" content="SitePoint">
+  <meta name="description" content="Bezier curve explorer. This webpage lets you create your own curves!">
+  <meta name="author" content="Gustav Lindström">
 
-  <meta property="og:title" content="A Basic HTML5 Template">
+  <meta property="og:title" content="Bezier curve">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://www.sitepoint.com/a-basic-html5-template/">
-  <meta property="og:description" content="A simple HTML5 Template for new projects.">
+  <meta property="og:url" content="https://gate-garden.com/BezierCurve/">
+  <meta property="og:description" content="Bezier curve explorer. This webpage lets you create your own curves!">
   <meta property="og:image" content="image.png">
 
   <link rel="icon" href="/favicon.ico">
@@ -26,24 +26,26 @@
   <!-- your content here... -->
   <div id="mainBody">
     <h1>
-        This is a webpage that creates a bezier curve, in a canvas from your points
+        This webpage lets you define a curve which a car attempts to follow.
     </h1>
     <div class="center">
-        <div class="topNavCanvas">
-            <button class="rowElements" onclick="removeBezierPoints()">Reset</button>
-            <button class="rowElements" onclick="refreshCanvas()">Generate bezier curve</button>
+      <canvas id="canvas" width="2000" height="2000"></canvas>  
+      <div class="topNavCanvas">
+            <button id="resetButton" class="rowElements">Reset</button>
+            <button id="ResetBezierCurve" class="rowElements">Reset bezier curve</button>
             <input type="checkbox" id="subsetVisibilityEnabled" name="subsetVisibilityEnabled"><label>Enable control point+lines visabilty</label>
             <div class="slidecontainer rowElements">
-              <input type="range" min="0" max="1" value="0.5" step="0.005" class="slider" id="progressRange">
+              <input type="range" min="-1000" max="1000" value="200" step="20" class="slider" id="progressRange">
             </div>
-        </div>
-        
-        <canvas id="canvas" width="2000" height="1000">
-
-        </canvas>
+            <div class="slidecontainer rowElements">
+              <input type="input" value="100" id="stepSelection">
+              <button onclick="stepForward()">Run steps</button>
+              <button onclick="toggleAutoRun()">Toggle</button>
+            </div>
+        </div>        
     </div>
     
   </div>
-  <script src="js/scripts.js"></script>
+  <script type="module" src="js/scripts.js"></script>
 </body>
 </html>

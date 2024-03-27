@@ -1,3 +1,4 @@
+import { BicycleModel } from "./MotionModels/MotionModels.js";
 import { Position } from "./Position.js";
 export class Car {
   /**
@@ -76,52 +77,54 @@ export class Car {
 export class CarKeyboardController {
 
   /**
-   * @param {Boolean} w
-   * @param {Boolean} a
-   * @param {Boolean} s
-   * @param {Boolean} d
+   * @param {Map} #keyStatus
+   * @param {BicycleModel} #CarMotionModel
+   * @param {Number} #intervalHandle
    */
-  w = false;
-  a = false;
-  s = false;
-  d = false;
   
-  constructor(carInstance) {
-    this.carInstance = carInstance;
+  #keyStatus = new Map();
+  #CarMotionModel;
+  #intervalHandle;
+  
+  /**
+   * @param {BicycleModel} CarMotionModel 
+   */
+  constructor(CarMotionModel) {
+    this.#CarMotionModel = CarMotionModel;
+    this.#intervalHandle = setInterval(()=>this.#triggerKeyboardMove(),10)
+  }
+
+  #triggerKeyboardMove(){
+    let turn = 0
+    let drive = 0
+    if(this.#hasGet("w")){
+      drive += 10;
+    }
+    if(this.#hasGet("s")){
+      drive -= 10;
+    }
+    if(this.#hasGet("a")){
+      turn -= Math.PI/30*Math.sign(drive);
+    }
+    if(this.#hasGet("d")){
+      turn += Math.PI/30*Math.sign(drive);
+    }
+    this.#CarMotionModel.drive(drive,turn);
   }
 
   /**
    * @param {KeyboardEvent} event 
+   * @param {Boolean} state
    */
-  keyboardEvent(event){
-    let turn = 0
-    let drive = 0
-
-    console.log(event.key)
-  
-    if(event.key.includes("w")){
-      drive += 10;
-    }
-    if(event.key.includes("a")){
-      turn -= Math.PI/70;
-    }
-    if(event.key.includes("s")){
-      drive -= 10;
-    }
-    if(event.key.includes("d")){
-      turn += Math.PI/70;
-    }
-    this.drive(turn,drive)
+  keyboardEvent(event,state){
+    this.#keyStatus.set(event.key,state)
   }
 
   /**
-   * @param {Number} turnAmout
-   * @param {Number} driveDistance
+   * @param {String} char key character.
+   * @returns {boolean} If this button is currently pressed
    */
-  drive(turnAmout, driveDistance) {
-    let newx = this.carInstance.getPosition().x + Math.sin(this.carInstance.getPosition().yaw) * driveDistance
-    let newy = this.carInstance.getPosition().y + -Math.cos(this.carInstance.getPosition().yaw) * driveDistance
-    let newYaw = this.carInstance.getPosition().yaw + turnAmout;
-    this.carInstance.setPosition(new Position(newx, newy, newYaw))
+  #hasGet(char){
+    return this.#keyStatus.has(char) && this.#keyStatus.get(char);
   }
 }

@@ -9,7 +9,11 @@ export class PurePersuite{
     #canvas;
     #enablePainting = true;
 
-
+    /**
+     * @param {canvas} canvas 
+     * @param {Function} originGetter
+     * @param {Function} targetPoint 
+     */
     constructor(canvas,originGetter = function(){},targetPoint = function(){}){
         this.#canvas = canvas;
         this.originGetter = originGetter;
@@ -17,7 +21,17 @@ export class PurePersuite{
     }
 
     performPurePersuite(){
-        let origin = this.originGetter();
+      /**
+       * @type {Position} origin
+       * @type {Position} targetPoint Yaw will be ignored
+       */
+      let origin = this.originGetter();
+      let targetPoint = this.targetPoint();
+
+      return {
+        distance : Math.sqrt((origin.x - targetPoint.x)^2 + (origin.y - targetPoint.y)^2),
+        yawToTarget : Math.atan2(targetPoint.y-origin.y,targetPoint.x-origin.x)
+      }
     }
     
     nextTarget(){

@@ -23,9 +23,12 @@ function refreshCanvas(){
   drawFunctions.forEach(f=>{f();})
 }
 
-//new BicycleModel(700,700,11,Math.PI/180 * 45)
 let carInstance = new Car(ctx,"resources/car.png", new Position(700,700,Math.PI/180 * 45))
 carInstance.setDataChangedCallback(refreshCanvas)
+
+let carMotionModel = new BicycleModel(new Position(700,700,Math.PI/180 * 45), function(arg){carInstance.setPosition(arg)})
+let carcontroller = new CarKeyboardController(carMotionModel)
+
 addDrawFunction(function(){carInstance.paint()})
 
 /** 
@@ -53,7 +56,7 @@ canvas.addEventListener('click', function(event) {
   var x = event.offsetX/canvas.offsetWidth * canvas.width;
   var y = event.offsetY/canvas.offsetHeight * canvas.height;
   if(document.getElementById('Checkbox2').checked){
-    carInstance.setPosition(new Position(
+    carMotionModel.overrideState(new Position(
       x,y,carInstance.getPosition().yaw))
   }else{
     var newAnchor = new BezierPoint(ctx,x,y,5,"red")
@@ -68,10 +71,14 @@ document.getElementById('progressRange').addEventListener("input", function() {
     carInstance.getPosition().y,
     document.getElementById('progressRange').value/100 * 2*Math.PI
     );
-  carInstance.setPosition(newPosition)
+    carMotionModel.overrideState(newPosition)
 }, false);
 
-let carcontroller = new CarKeyboardController(carInstance)
-document.addEventListener('keypress',function(event){
-carcontroller.keyboardEvent(event)
+
+document.addEventListener('keydown',function(event){
+  carcontroller.keyboardEvent(event,true)
+})
+
+document.addEventListener('keyup',function(event){
+  carcontroller.keyboardEvent(event,false)
 })

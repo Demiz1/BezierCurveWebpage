@@ -1,4 +1,4 @@
-import { BicycleModel } from "./MotionModels/MotionModels.js";
+import { BicycleModel, Signal } from "./MotionModels/MotionModels.js";
 import { Position } from "./Position.js";
 export class Car {
   /**
@@ -109,7 +109,7 @@ export class CarKeyboardController {
     if(this.#hasGet("d")){
       turn += Math.PI/30*Math.sign(drive);
     }
-    this.#CarMotionModel.drive(drive,turn);
+    this.#CarMotionModel.update(new Signal(drive,turn));
   }
 
   /**

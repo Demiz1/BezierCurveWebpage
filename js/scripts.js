@@ -3,6 +3,7 @@ import { BezierPoint } from "./Bezier/BezierPoint.js";
 import { BezierCurve } from "./Bezier/BezierCurve.js";
 import { Car, CarKeyboardController } from "./Car.js";
 import { Position } from "./Position.js";
+import { PurePersuite } from "./ControlLaws/PurePersuite.js";
 
 const canvas = document.getElementById('canvas');
 canvas.width = 2500;
@@ -28,6 +29,8 @@ carInstance.setDataChangedCallback(refreshCanvas)
 
 let carMotionModel = new BicycleModel(new Position(700,700,Math.PI/180 * 45), function(arg){carInstance.setPosition(arg)})
 let carcontroller = new CarKeyboardController(carMotionModel)
+
+//let purePersuite = new PurePersuite(ctx,function(){ return carInstance.getPosition()},)
 
 addDrawFunction(function(){carInstance.paint()})
 

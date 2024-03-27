@@ -1,40 +1,35 @@
-import { Car } from "../Car.js"
+import { BicycleModel,Signal } from "../MotionModels/MotionModels.js"
 
-export class simpleController{
+export class SimpleController{
     /**
-     * @param {Function} #sampleFunction 
-     * @param {Function} #limitFunction 
-     * @param {SimpleCarMotion} #motionModel
-     * @param {Car} #carInstance
+     * @param {()=>Signal} #sampleFunction 
+     * @param {BicycleModel} #motionModel
      */
 
     #intervalHandle
     #sampleFunction
-    #limitFunction
     #motionModel
     #enabledLoop
-    #carInstance
 
     /**
-     * @param {Function} sampleFunction 
-     * @param {Function} limitFunction 
-     * @param {SimpleCarMotion} motionModel
+     * @param {()=>Signal} sampleFunction 
+     * @param {BicycleModel} motionModel
      * @param {Boolean} enabledLoop 
      */
-    constructor(sampleFunction, limitFunction, motionModel, enabledLoop = false, carInstance){
+    constructor(sampleFunction, motionModel, enabledLoop = false){
         this.#sampleFunction = sampleFunction;
-        this.#limitFunction = limitFunction;
         this.#motionModel = motionModel;
         this.#enabledLoop = enabledLoop;
-        this.#carInstance = carInstance;
 
-        this.#intervalHandle = setInterval(()=>{this.#spinn()})
+        this.#intervalHandle = setInterval(()=>{
+            if(this.#enabledLoop){
+                this.#spinn()
+            }
+        },10)
     }
     #spinn(){
         let newSample = this.#sampleFunction()
-        let controlSignal = this.#limitFunction()
-        this.#motionModel.update(limitedSample)
-        this.#carInstance.setPosition(this.#motionModel.getPosition())
+        this.#motionModel.update(newSample)
     }
     /**
      * @param {Boolean} enabled

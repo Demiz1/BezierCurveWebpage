@@ -1,5 +1,24 @@
 import { Position } from "../Position.js";
 
+export class Signal{
+  /**
+   * @param {Number} driveDistance
+   * @param {Number} turnAmount
+   */
+  driveDistance
+  turnAmount
+
+  /**
+   * 
+   * @param {Number} driveDistance 
+   * @param {Number} turnAmout 
+   */
+  constructor(driveDistance,turnAmout){
+    this.driveDistance = driveDistance
+    this.turnAmount = turnAmout
+  }
+}
+
 export class BicycleModel{
     /**
      * @param {Position} #position the state
@@ -25,13 +44,12 @@ export class BicycleModel{
     }
 
     /**
-   * @param {Number} turnAmout
-   * @param {Number} driveDistance
+   * @param {Signal} input
    */
-  drive(driveDistance,turnAmout) {
-    let newx = this.#position.x + Math.sin(this.#position.yaw) * driveDistance
-    let newy = this.#position.y + -Math.cos(this.#position.yaw) * driveDistance
-    let newYaw = this.#position.yaw + turnAmout;
+  update(input) {
+    let newx = this.#position.x + Math.sin(this.#position.yaw) * input.driveDistance
+    let newy = this.#position.y + -Math.cos(this.#position.yaw) * input.driveDistance
+    let newYaw = this.#position.yaw + input.turnAmount;
     this.overrideState(new Position(newx, newy, newYaw))
   }
 

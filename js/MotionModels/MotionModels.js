@@ -1,102 +1,120 @@
 import { Position } from "../Position.js";
+import { NumWithLimit } from "../Utils/NumWithLimit.js";
 
-export class Signal{
+export class Signal {
   /**
-   * @param {Number} driveDistance
-   * @param {Number} turnAmount
+   * @param {Number} acceleration
+   * @param {Number} steeringAngle
    */
-  driveDistance
-  turnAmount
+  acceleration
+  steeringAngle
 
   /**
    * 
-   * @param {Number} driveDistance 
-   * @param {Number} turnAmout 
+   * @param {Number} acceleration in m/s
+   * @param {Number} steeringAngle in radians
    */
-  constructor(driveDistance,turnAmout){
-    this.driveDistance = driveDistance
-    this.turnAmount = turnAmout
+  constructor(acceleration, steeringAngle) {
+    this.acceleration = acceleration
+    this.steeringAngle = steeringAngle
   }
 }
 
-export class BicycleModel{
-    /**
-     * @param {Position} #position the state
-     * @param {Function} #onUpdatedState callback when the state is updated.
-     */
-    #position;
-    #onStateUpdated;
-    /**
-     * @param {Position} initialPosition 
-     * @param {(Position) => void} [onStateUpdated=function(){}] 
-     */
-    constructor(initialPosition, onStateUpdated = function(updatedState){}){
-      this.#position = initialPosition;
-      this.#onStateUpdated = onStateUpdated;
-    }
-
-    /**
-     * 
-     * @param {() => void} [callback=function(){}] 
-     */
-    setOnStateUpdatedFunction(callback){
-      this.#onStateUpdated = callback;
-    }
-
-    /**
-   * @param {Signal} input
+export class BicycleModel {
+  /**
+   * @param {Position} #position the state
+   * @param {NumWithLimit} #velocity
+   * @param {NumWithLimit} #steering
+   * @param {Number} #wheelBase
+   * @param {Function} #onUpdatedState callback when the state is updated.
+   * @param {Number} #loopId
+   * 
    */
+  #position;
+  #velocity;
+  #acceleration;
+  #steering;
+  #wheelBase;
+  #onStateUpdated;
+  #timeStamp;
+  #loopId = null;
+  /**
+   * @param {Position} initialPosition 
+   * @param {(Position) => void} [onStateUpdated=function(){}] 
+   * @param {NumWithLimit} velocity 
+   * @param {NumWithLimit} steering 
+   * @param {NumWithLimit} acceleration 
+   * @param {Number} wheelBase 
+   */
+  constructor(initialPosition, velocity, acceleration, steering, wheelBase, onStateUpdated = function (updatedState) { }) {
+    this.#position = initialPosition;
+    this.#velocity = velocity;
+    this.#acceleration = acceleration
+    this.#wheelBase = wheelBase
+    this.#steering = steering
+    this.#onStateUpdated = onStateUpdated;
+    this.startLoop();
+  }
+
+  startLoop(){
+    if(this.#loopId != null) return;
+    this.#loopId = requestAnimationFrame(this.spinner.bind(this))
+  }
+
+  stopLoop(){
+    if(this.#loopId == null) return;
+    cancelAnimationFrame(this.#loopId)
+    this.#loopId = NaN;
+  }
+
+  spinner(t){
+    this.#step(t)
+    this.#loopId = requestAnimationFrame(this.spinner.bind(this))
+  }
+
+  /**
+   * 
+   * @param {() => void} [callback=function(){}] 
+   */
+  setOnStateUpdatedFunction(callback) {
+    this.#onStateUpdated = callback;
+  }
+
+  /**
+ * @param {Signal} input
+ */
   update(input) {
-    let newx = this.#position.x + Math.sin(this.#position.yaw) * input.driveDistance
-    let newy = this.#position.y + -Math.cos(this.#position.yaw) * input.driveDistance
-    let newYaw = this.#position.yaw + input.turnAmount;
-    this.overrideState(new Position(newx, newy, newYaw))
+    this.#steering.setValue(this.#steering.getValue() + input.steeringAngle)
+    this.#acceleration.setValue(this.#acceleration.getValue() + input.acceleration)
+  }
+
+  /**
+   * 
+   * @param {DOMHighResTimeStamp} timeStamp 
+   */
+  #step(timeStamp) {
+    if((timeStamp - this.#timeStamp)<200){
+      let delta = (timeStamp - this.#timeStamp) /1000;
+      let newX = this.#position.x + this.#velocity.getValue() * Math.cos(this.#position.yaw) * delta;
+      let newY = this.#position.y + this.#velocity.getValue() * Math.sin(this.#position.yaw) * delta;
+      let newAngle = this.#position.yaw + this.#velocity.getValue() * Math.tan(this.#steering.getValue()) / this.#wheelBase * delta;
+      let newV = this.#velocity.getValue() + this.#acceleration.getValue() * delta
+      
+      let np = new Position(newX, newY,newAngle)
+      if (!this.#position.equals(np)) this.overrideState(np)
+      this.#velocity.setValue(newV)
+
+      //Make velocity slowly aproach zero. Same for acceleration
+      
+    }
+    this.#timeStamp = timeStamp;
   }
 
   /**
    * @param {Position} newPosition 
    */
-  overrideState(newPosition){
+  overrideState(newPosition) {
     this.#position = newPosition;
     this.#onStateUpdated(this.#position)
   }
-  
-    /**
-     * @deprecated
-     * @param {Number} t timestep in sec (you probably want something low like 0.001)
-     * @param {Number} a m/s^2
-     * @param {Number} yawRate radians
-     */
-    step(t,a,yawRate){
-      this.v = this.v + a*t
-      this.yaw = this.yaw + yawRate*t
-      this.x = this.x + this.v * Math.sin(this.yaw) * t
-      this.y = this.y + this.v * -Math.cos(this.yaw) * t
-    }
-
-    /**
-     * @deprecated
-     * @param {Number} t timestep in sec (you probably want something low like 0.001)
-     * @param {Number} a m/s^2
-     * @param {Number} yaw radians
-     */
-    step(t,a,yaw){
-      this.v = this.v + a*t
-      this.yaw = yaw
-      this.x = this.x + this.v * Math.sin(this.yaw) * t
-      this.y = this.y + this.v * -Math.cos(this.yaw) * t
-    }
-
-    /**
-     * @deprecated
-     * @param {Number} t timestep in sec (you probably want something low like 0.001)
-     * @param {Number} v m/s
-     * @param {Number} yaw radians
-     */
-    step(t,v,yaw){
-      this.v = v
-      this.yaw = yaw
-      this.x = this.x + this.v * Math.sin(this.yaw) * t
-      this.y = this.y + this.v * -Math.cos(this.yaw) * t
-    }
 }

@@ -8,11 +8,13 @@ export class PurePersuite{
     #ICR = 300;
     #canvas;
     #enablePainting = true;
+    origin = new Position(0,0,0)
+    targetPoint = new Position(1,1,2)
 
     /**
      * @param {canvas} canvas 
-     * @param {Function} originGetter
-     * @param {Function} targetPoint 
+     * @param {()=>Signal} originGetter
+     * @param {()=>Signal} targetPoint 
      */
     constructor(canvas,originGetter = function(){},targetPoint = function(){}){
         this.#canvas = canvas;
@@ -25,8 +27,8 @@ export class PurePersuite{
        * @type {Position} origin
        * @type {Position} targetPoint Yaw will be ignored
        */
-      let origin = this.originGetter();
-      let targetPoint = this.targetPoint();
+      this.origin = this.originGetter();
+      this.targetPoint = this.targetPoint();
 
       return {
         distance : Math.sqrt((origin.x - targetPoint.x)^2 + (origin.y - targetPoint.y)^2),
@@ -43,6 +45,39 @@ export class PurePersuite{
      */
     getError(){
         return new Position(50,50,Math.PI/3)
+    }
+
+    paint(){
+      if(!this.#enablePainting) return;
+
+      //origin
+      originPaint = new Path2D();
+      this.#canvas.fillStyle = 'green';
+      originPaint.arc(this.origin.x,this.origin.y,20,0,2*Math.PI);
+      this.#canvas.stroke(originPaint)
+      //target
+      targetPaint = new Path2D();
+      this.#canvas.fillStyle = 'yellow';
+      targetPaint.arc(this.targetPoint.x,this.targetPoint.y,20,0,2*Math.PI)
+      this.#canvas.stroke(targetPaint);
+      
+      this.canvas.setTransform(
+        Math.cos(this.origin.yaw),
+        Math.sin(this.origin.yaw),
+        -Math.sin(this.origin.yaw),
+        Math.cos(this.origin.yaw),
+        this.origin.x,
+        this.origin.y
+      );
+      this.paintPurePersuite()
+      this.canvas.resetTransform();
+    }
+
+    paintPurePersuite(){
+      
+      //turn arc
+      
+
     }
 
     restOfPaint(){

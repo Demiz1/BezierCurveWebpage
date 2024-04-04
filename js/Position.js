@@ -21,4 +21,18 @@
       this.y = y;
       this.yaw = yaw
     }
+
+
+    /**
+     * 
+     * @param {Position} compare 
+     * @returns Boolean
+     */
+    equals(compare){
+      if(this.x == compare.x && this.y == compare.y && this.yaw == this.yaw){
+        return true
+      } else{
+        return false
+      }
+    }
 }

@@ -26,6 +26,7 @@ export class BicycleModel {
    * @param {NumWithLimit} #velocity
    * @param {NumWithLimit} #steering
    * @param {Number} #wheelBase
+   * @param {Number} #friction
    * @param {Function} #onUpdatedState callback when the state is updated.
    * @param {Number} #loopId
    * 
@@ -35,23 +36,26 @@ export class BicycleModel {
   #acceleration;
   #steering;
   #wheelBase;
+  #friction
   #onStateUpdated;
   #timeStamp;
   #loopId = null;
   /**
    * @param {Position} initialPosition 
-   * @param {(Position) => void} [onStateUpdated=function(){}] 
    * @param {NumWithLimit} velocity 
    * @param {NumWithLimit} steering 
    * @param {NumWithLimit} acceleration 
-   * @param {Number} wheelBase 
+   * @param {Number} wheelBase
+   * @param {Number} friction  
+   * @param {(Position) => void} [onStateUpdated=function(){}]
    */
-  constructor(initialPosition, velocity, acceleration, steering, wheelBase, onStateUpdated = function (updatedState) { }) {
+  constructor(initialPosition, velocity, acceleration, steering, wheelBase,friction=0.05, onStateUpdated = function (updatedState) { }) {
     this.#position = initialPosition;
     this.#velocity = velocity;
     this.#acceleration = acceleration
     this.#wheelBase = wheelBase
     this.#steering = steering
+    this.#friction = friction
     this.#onStateUpdated = onStateUpdated;
     this.startLoop();
   }
@@ -89,7 +93,6 @@ export class BicycleModel {
   }
 
   /**
-   * 
    * @param {DOMHighResTimeStamp} timeStamp 
    */
   #step(timeStamp) {
@@ -97,14 +100,14 @@ export class BicycleModel {
       let delta = (timeStamp - this.#timeStamp) /1000;
       let newX = this.#position.x + this.#velocity.getValue() * Math.cos(this.#position.yaw) * delta;
       let newY = this.#position.y + this.#velocity.getValue() * Math.sin(this.#position.yaw) * delta;
-      let newAngle = this.#position.yaw + this.#velocity.getValue() * Math.tan(this.#steering.getValue()) / this.#wheelBase * delta;
-      let newV = this.#velocity.getValue() + this.#acceleration.getValue() * delta
+      let newAngle = this.#position.yaw + Math.abs(this.#velocity.getValue()) * Math.tan(this.#steering.getValue()) / this.#wheelBase * delta;
+      let newV = this.#velocity.getValue() + this.#acceleration.getValue() * delta - this.#friction*this.#velocity.getValue();
       
       let np = new Position(newX, newY,newAngle)
       if (!this.#position.equals(np)) this.overrideState(np)
       this.#velocity.setValue(newV)
 
-      //Make velocity slowly aproach zero. Same for acceleration
+      this.#acceleration.setValue(this.#acceleration.getValue()*0.6)
       
     }
     this.#timeStamp = timeStamp;

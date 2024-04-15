@@ -32,10 +32,10 @@ addDrawFunction(function () { carInstance.paint() })
 
 let carMotionModel = new BicycleModel(
   new Position(700, 700, 0),
-  new NumWithLimit(0,50,-50),
-  new NumWithLimit(0,20,-20),
+  new NumWithLimit(0,100,-100),
+  new NumWithLimit(0,20,-40),
   new NumWithLimit(0,Math.PI/6,-Math.PI/6),
-  50,
+  50,0.001,
   function (arg) { carInstance.setPosition(arg) }
   )
 let carcontroller = new CarKeyboardController(carMotionModel)

@@ -23,16 +23,18 @@ export class CarKeyboardController {
       let steering = 0
       let acceleration = 0
       if(this.#hasGet("w")){
-        acceleration += 5;
+        acceleration += 40;
       }
       if(this.#hasGet("s")){
-        acceleration -= 5;
+        acceleration -= 40;
       }
-      if(this.#hasGet("a")){
-        steering -= Math.PI/100*Math.sign(acceleration);
+      let sign = 1;
+      if(acceleration!=0) sign = Math.sign(acceleration)
+      if(this.#hasGet("a")){  
+        steering -= Math.PI/100*sign;
       }
       if(this.#hasGet("d")){
-        steering += Math.PI/100*Math.sign(acceleration);
+        steering += Math.PI/100*sign;
       }
       if(acceleration !=0 || steering !=0) this.#CarMotionModel.update(new Signal(acceleration,steering));
     }

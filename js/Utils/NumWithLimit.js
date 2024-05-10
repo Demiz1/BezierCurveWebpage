@@ -32,4 +32,9 @@ export class NumWithLimit{
    * @returns Number
    */
   getValue(){return this.#num}
+
+  /**
+   * @returns Number
+   */
+  getUpperLimit(){return this.#upperLimit}
 }

@@ -6,6 +6,7 @@ import { CarKeyboardController } from "./Utils/KeyboardController.js"
 import { Position } from "./Position.js";
 import { PurePersuite } from "./ControlLaws/PurePersuite.js";
 import { NumWithLimit } from "./Utils/NumWithLimit.js";
+import { Gague } from "./UI_components/Gague.js";
 
 const canvas = document.getElementById('canvas');
 canvas.width = 2500;
@@ -93,3 +94,17 @@ document.addEventListener('keydown', function (event) {
 document.addEventListener('keyup', function (event) {
   carcontroller.keyboardEvent(event, false)
 })
+
+let speed_gauge = new Gague(new NumWithLimit(0,240,0),"speed_gauge")
+speed_gauge.set_gauge_speed(120)
+
+var speed = 0;
+function loop(){
+  speed = (speed + 1) % 240;
+  setTimeout(function() {
+    speed_gauge.set_gauge_speed(speed);
+  }, 150);
+  window.requestAnimationFrame(loop);
+}
+
+window.requestAnimationFrame(loop);

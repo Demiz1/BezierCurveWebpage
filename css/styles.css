@@ -1,6 +1,6 @@
 * {
     box-sizing: border-box;
-  }
+}
 
 body {
     background-color: coral;
@@ -12,15 +12,15 @@ body {
     width: 80%;
     border: 3px solid green;
     padding: 10px;
-  }
+}
 
-#canvas{
+#canvas {
     width: 100%;
     height: max-content;
     background-color: aliceblue;
 }
 
-.rowElements{
+.rowElements {
     float: left;
     align-items: center;
     display: flex;
@@ -28,7 +28,71 @@ body {
     vertical-align: middle;
 }
 
-.topNavCanvas{
+.topNavCanvas {
     justify-content: center;
     vertical-align: middle;
+}
+
+div#speed_gauge {
+    position: relative;
+    margin: 100px auto;
+    width: 50vw;
+    height: 50vw;
+}
+
+div#speed_gauge p#units,
+div#speed_gauge div#circle,
+div#speed_gauge div#needle,
+div#speed_gauge p.marker,
+div#speed_gauge div.label_wrapper {
+    position: absolute;
+    margin: 0;
+    left: 50%;
+    color: rgb(186, 201, 206);
+}
+
+div#speed_gauge div#circle {
+    width: 10%;
+    height: 10%;
+    bottom: 50%;
+    transform: translate(-50%, 50%);
+    border-radius: 50%;
+    background-color: rgb(76, 76, 90);
+    z-index: 2;
+}
+
+div#speed_gauge p#units {
+    bottom: 35%;
+    font-size: 3vw;
+    transform: translateX(-50%);
+}
+
+div#speed_gauge div#needle,
+div#speed_gauge p.marker,
+div#speed_gauge div.label_wrapper {
+    bottom: 50%;
+    transform: translateX(-50%);
+    transform-origin: 50% 100%;
+}
+
+div#speed_gauge div#needle {
+    width: 1.5%;
+    height: 40%;
+    background-color: rgb(175, 61, 61);
+    border-radius: 40% 40% 0 0;
+    z-index: 1;
+}
+
+div#speed_gauge p.marker {
+    font-size: 4vw;
+    height: 50%;
+}
+
+div#speed_gauge div.label_wrapper {
+    height: 38%;
+}
+
+div#speed_gauge div.label_wrapper p {
+    font-size: 2.5vw;
+    margin: 0;
 }

@@ -27,7 +27,7 @@ export class BicycleModel {
    * @param {NumWithLimit} #steering
    * @param {Number} #wheelBase
    * @param {Number} #friction
-   * @param {Function} #onUpdatedState callback when the state is updated.
+   * @param {(Position) => void} #onUpdatedState callback when the state is updated.
    * @param {Number} #loopId
    * 
    */

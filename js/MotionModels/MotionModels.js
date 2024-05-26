@@ -47,7 +47,7 @@ export class BicycleModel {
    * @param {NumWithLimit} acceleration 
    * @param {Number} wheelBase
    * @param {Number} friction  
-   * @param {(Position) => void} [onStateUpdated=function(){}]
+   * @param {(BicycleModel) => void} [onStateUpdated=function(){}]
    */
   constructor(initialPosition, velocity, acceleration, steering, wheelBase,friction=0.05, onStateUpdated = function (updatedState) { }) {
     this.#position = initialPosition;
@@ -58,6 +58,22 @@ export class BicycleModel {
     this.#friction = friction
     this.#onStateUpdated = onStateUpdated;
     this.startLoop();
+  }
+
+  /**
+   * 
+   * @returns Position
+   */
+  getPosition(){
+    return this.#position;
+  }
+
+  /**
+   * 
+   * @returns NumWithLimit
+   */
+  getVelocity(){
+    return this.#velocity;
   }
 
   startLoop(){
@@ -78,7 +94,7 @@ export class BicycleModel {
 
   /**
    * 
-   * @param {() => void} [callback=function(){}] 
+   * @param {(BicycleModel) => void} [callback=function(){}] 
    */
   setOnStateUpdatedFunction(callback) {
     this.#onStateUpdated = callback;
@@ -118,6 +134,6 @@ export class BicycleModel {
    */
   overrideState(newPosition) {
     this.#position = newPosition;
-    this.#onStateUpdated(this.#position)
+    this.#onStateUpdated(this)
   }
 }

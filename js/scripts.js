@@ -31,13 +31,24 @@ let carInstance = new Car(ctx, "resources/car.png", new Position(700, 700, 0))
 carInstance.setDataChangedCallback(refreshCanvas)
 addDrawFunction(function () { carInstance.paint() })
 
+let speed_gauge = new Gague(new NumWithLimit(0,240,0),"speed_gauge")
+speed_gauge.set_gauge_speed(120)
+
+/**
+ * 
+ * @param {BicycleModel} newState 
+ */
+function newStateCallback(newState){
+  carInstance.setPosition(newState.getPosition()) 
+  speed_gauge.set_gauge_speed(Math.abs(newState.getVelocity().getValue()))
+}
 let carMotionModel = new BicycleModel(
   new Position(700, 700, 0),
   new NumWithLimit(0,100,-100),
   new NumWithLimit(0,20,-40),
   new NumWithLimit(0,Math.PI/6,-Math.PI/6),
   50,0.001,
-  function (arg) { carInstance.setPosition(arg) }
+  newStateCallback
   )
 let carcontroller = new CarKeyboardController(carMotionModel)
 
@@ -95,9 +106,8 @@ document.addEventListener('keyup', function (event) {
   carcontroller.keyboardEvent(event, false)
 })
 
-let speed_gauge = new Gague(new NumWithLimit(0,240,0),"speed_gauge")
-speed_gauge.set_gauge_speed(120)
 
+/*
 var speed = 0;
 function loop(){
   speed = (speed + 1) % 240;
@@ -108,3 +118,4 @@ function loop(){
 }
 
 window.requestAnimationFrame(loop);
+*/

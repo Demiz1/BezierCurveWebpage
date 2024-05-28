@@ -12,35 +12,44 @@ body {
     width: 80%;
     border: 3px solid green;
     padding: 10px;
+    display: grid;
 }
 
-#canvas {
+#canvasContainer {
     width: 100%;
     height: max-content;
     background-color: aliceblue;
+    position: relative;
 }
 
-.rowElements {
-    float: left;
-    align-items: center;
-    display: flex;
-    justify-content: center;
-    vertical-align: middle;
+#canvas {
+    width: inherit;
 }
 
 .topNavCanvas {
-    justify-content: center;
-    vertical-align: middle;
+    background-color: yellowgreen;
+}
+
+.topNavCanvas *{
+    float: left;
+}
+
+div#gagueContainer{
+    position: absolute;
+    bottom: -2.5vw;
+    right: 0;
 }
 
 div#speed_gauge {
     position: relative;
-    margin: 100px auto;
-    width: 50vw;
-    height: 50vw;
+    margin: 0.1vw;
+    margin-bottom: 0%;
+    width: 20vw;
+    height: 20vw;
 }
 
 div#speed_gauge p#units,
+div#speed_gauge p#valueReadout,
 div#speed_gauge div#circle,
 div#speed_gauge div#needle,
 div#speed_gauge p.marker,
@@ -62,8 +71,14 @@ div#speed_gauge div#circle {
 }
 
 div#speed_gauge p#units {
-    bottom: 35%;
-    font-size: 3vw;
+    bottom: 25%;
+    font-size: 2vw;
+    transform: translateX(-50%);
+}
+
+div#speed_gauge p#valueReadout {
+    bottom: 15%;
+    font-size: 2vw;
     transform: translateX(-50%);
 }
 
@@ -84,7 +99,7 @@ div#speed_gauge div#needle {
 }
 
 div#speed_gauge p.marker {
-    font-size: 4vw;
+    font-size: 2vw;
     height: 50%;
 }
 
@@ -93,6 +108,6 @@ div#speed_gauge div.label_wrapper {
 }
 
 div#speed_gauge div.label_wrapper p {
-    font-size: 2.5vw;
+    font-size: 1.5vw;
     margin: 0;
 }

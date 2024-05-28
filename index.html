@@ -29,29 +29,35 @@
       This webpage lets you define a curve which a car attempts to follow.
     </h1>
     <div class="center">
-      <canvas id="canvas" width="2000" height="2000"></canvas>
+      <div id="canvasContainer">
+        <canvas id="canvas" width="2000" height="2000"></canvas>
+        <div id="gagueContainer">
+          <div id="speed_gauge">
+            <p id="valueReadout">0</p>
+            <div id="needle"></div>
+            <div id="circle"></div>
+            <p id="units">km/h</p>
+          </div>
+        </div>
+      </div>
       <div class="topNavCanvas">
-        <button id="resetButton" class="rowElements">Reset</button>
-        <button id="ResetBezierCurve" class="rowElements">Reset bezier curve</button>
-        <div class="slidecontainer rowElements">
+        <button id="resetButton">Reset</button>
+        <button id="ResetBezierCurve">Reset bezier curve</button>
+        <div class="slidecontainer">
           <input type="range" min="0" max="100" value="20" step="0.1" class="slider" id="progressRange">
         </div>
-        <div class="slidecontainer rowElements">
+        <div class="slidecontainer">
           <input type="input" value="100" id="stepSelection">
           <button onclick="stepForward()">Run steps</button>
           <button onclick="toggleAutoRun()">Toggle</button>
         </div>
-        <div class="slidecontainer rowElements">
+        <div class="slidecontainer">
           <input type="checkbox" id="Checkbox1"><label>Enable control point+lines visabilty</label>
           <input type="checkbox" id="Checkbox2"><label>setPositionOfCar</label>
         </div>
       </div>
     </div>
-    <div id="speed_gauge">
-      <div id="needle"></div>
-      <div id="circle"></div>
-      <p id="units">km/h</p>
-  </div>
+    
   </div>
   <script type="module" src="js/scripts.js"></script>
 </body>

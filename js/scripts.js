@@ -32,7 +32,7 @@ carInstance.setDataChangedCallback(refreshCanvas)
 addDrawFunction(function () { carInstance.paint() })
 
 let speed_gauge = new Gague(new NumWithLimit(0,240,0),"speed_gauge")
-speed_gauge.set_gauge_speed(120)
+
 
 /**
  * 
@@ -105,17 +105,3 @@ document.addEventListener('keydown', function (event) {
 document.addEventListener('keyup', function (event) {
   carcontroller.keyboardEvent(event, false)
 })
-
-
-/*
-var speed = 0;
-function loop(){
-  speed = (speed + 1) % 240;
-  setTimeout(function() {
-    speed_gauge.set_gauge_speed(speed);
-  }, 150);
-  window.requestAnimationFrame(loop);
-}
-
-window.requestAnimationFrame(loop);
-*/

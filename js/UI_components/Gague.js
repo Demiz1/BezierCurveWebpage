@@ -8,11 +8,13 @@ export class Gague{
      * @type {Number} #gagueCurveAngle
      * @type {HTMLElement} #gagueContainerDiv
      * @type {HTMLElement} #gagueNeedle
+     * @type {HTMLElement} #gagueValueReadout
      */
     #value 
     #gagueCurveAngle = 240;
     #gagueContainerDiv
     #gagueNeedle
+    #gagueValueReadout
 
     /** 
      * @param {NumWithLimit} limits 
@@ -25,7 +27,10 @@ export class Gague{
         if(this.#gagueContainerDiv == null) throw new Error(`Could not find the gague container div. Searched for ${gagueId}`)
         this.#gagueNeedle = this.#gagueContainerDiv.querySelector(`#needle`)
         if(this.#gagueContainerDiv == null) throw new Error(`Could not find the gague needle div. Searched for "needle" inside the container ${gagueId}`)
+        this.#gagueValueReadout = this.#gagueContainerDiv.querySelector(`#valueReadout`)
+        
         this.#build_speed_gauge();
+        this.set_gauge_speed(this.#value.getValue())
     }
 
     #build_speed_gauge(){
@@ -68,6 +73,6 @@ export class Gague{
      */
     set_gauge_speed(speed){
         this.#gagueNeedle.style.transform = "translateX(-50%) rotate("+ ((speed/this.#value.getUpperLimit()-1/2) * this.#gagueCurveAngle) +"deg)";
-        //needle.style.transform = "translateX(-50%) rotate("+ (speed - this.#value.getUpperLimit()/2) +"deg)";
+        this.#gagueValueReadout.innerHTML =`${Math.round(speed * 100)/100}`
     }
 }

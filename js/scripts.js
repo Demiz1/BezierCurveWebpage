@@ -105,3 +105,13 @@ document.addEventListener('keydown', function (event) {
 document.addEventListener('keyup', function (event) {
   carcontroller.keyboardEvent(event, false)
 })
+
+let percentageLoop = 0
+function loop(){
+  percentageLoop = (percentageLoop + 0.05) % 100;
+  setTimeout(function() {
+    document.querySelector(`#bar_indicator #main_bar #marker`).style.left = `${Math.sin(percentageLoop)*50+50}%`
+  }, 150);
+  window.requestAnimationFrame(loop);
+}
+window.requestAnimationFrame(loop);

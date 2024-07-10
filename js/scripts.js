@@ -28,18 +28,49 @@ function refreshCanvas() {
   drawFunctions.forEach(f => { f(); })
 }
 
-let carInstance = new Car(ctx, "resources/car.png", new Position(700, 700, 0))
+let carInstance = new Car(ctx, "resources/car.png", new Position(700, 700))
 carInstance.setDataChangedCallback(refreshCanvas)
 addDrawFunction(function () { carInstance.paint() })
 
 let speed_gauge = new Gague(new NumWithLimit(0,240,0),"speed_gauge")
 
-let targetPoint = new BezierPoint(ctx,1800,500,20,"blue");
-addDrawFunction(()=>{targetPoint.paint()})
+let targetPoints = [
+  new BezierPoint(ctx,1800,500,10,"blue"),
+  new BezierPoint(ctx,700,800,10,"blue"),
+  new BezierPoint(ctx,1300,200,10,"blue")
+]
 
-let purePersuite = new PurePersuite(ctx,carInstance.getPosition.bind(carInstance), ()=>{
-  return new Position(targetPoint.x,targetPoint.y)
+addDrawFunction(()=>{
+  targetPoints.forEach(e =>{
+    e.paint();
+  })
 })
+
+let index = 0;
+let lookAheadDistance = 200;
+let purePersuite = new PurePersuite(ctx,carInstance.getPosition.bind(carInstance), ()=>{
+  index=(index+1)%(targetPoints.length)
+  return targetPoints[index]
+},lookAheadDistance)
+
+/**
+ * @param {BicycleModel} carState 
+ * @returns Signal
+ */
+function runPurePersuit(carState){
+  let currentErr = purePersuite.performPurePersuite();
+    let currentVelocity = carState.getVelocity().getValue();
+    carState.getSteeing().getLowerLimit()
+    carState.getSteeing().getUpperLimit()
+    let signal = new Signal(0,currentErr.error);
+    if(currentVelocity<200){
+      signal.acceleration = 10;
+    }
+    if(currentErr.distance < lookAheadDistance && currentVelocity>1){
+      signal.acceleration = -100;
+    }
+    return signal;
+}
 addDrawFunction(()=>{purePersuite.paint()})
 
 let steeringLimits = new NumWithLimit(0,Math.PI/6,-Math.PI/6);
@@ -52,6 +83,7 @@ function newStateCallback(newState){
   carInstance.setPosition(newState.getPosition()) 
   speed_gauge.set_gauge_speed(Math.abs(newState.getVelocity().getValue()))
   steeingGUI.setValue(newState.getSteeing().getValue())
+  carMotionModel.update(runPurePersuit(newState))
 }
 
 let carMotionModel = new BicycleModel(
@@ -65,7 +97,8 @@ let carMotionModel = new BicycleModel(
   )
 let carcontroller = new CarKeyboardController(carMotionModel)
 
-
+//kickoff the purepersuite
+carMotionModel.update(runPurePersuit(carMotionModel))
 
 /** 
  * @type {BezierCurve} bezierCurve
@@ -81,7 +114,7 @@ bezierCurve.setDataChangedCallback(refreshCanvas)
 addDrawFunction(function () { bezierCurve.paint() })
 
 document.getElementById('Checkbox1').addEventListener('click', function () {
-  bezierCurve.setBezierSetsVisible(document.getElementById('Checkbox1').checked)
+  bezierCurve.setBezierSetsVisible(document.getElementById('Checkbox1 ').checked)
 });
 
 document.getElementById('ResetBezierCurve').addEventListener("click", function () {
@@ -119,31 +152,10 @@ document.addEventListener('keyup', function (event) {
   carcontroller.keyboardEvent(event, false)
 })
 
-/*
-let percentageLoop = 0
-function loop(){
-  percentageLoop = (percentageLoop + 0.05) % 100;
-  setTimeout(function() {
-    document.querySelector(`#bar_indicator #main_bar #marker`).style.left = `${Math.sin(percentageLoop)*50+50}%`
-  }, 150);
-  window.requestAnimationFrame(loop);
-}
-window.requestAnimationFrame(loop);
-*/
-
-function loop(){
-  setTimeout(function(){
-    let currentErr = purePersuite.performPurePersuite();
-    let currentVelocity = carMotionModel.getVelocity().getValue();
-    let signal = new Signal(0,currentErr.yawToTarget);
-    if(currentVelocity<60){
-      signal.acceleration = 10;
-    }
-    if(currentErr.distance < 200 && currentVelocity>1){
-      signal.acceleration = -100;
-    }
-    carMotionModel.update(signal)
-    loop();
-  },100)
-}
-loop()
+let toggle = true;
+document.addEventListener('keyup',function(event){
+  if(event.code == "Space"){
+    toggle = !toggle;
+    toggle ? carMotionModel.startLoop() : carMotionModel.stopLoop();
+  }
+})

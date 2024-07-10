@@ -88,7 +88,7 @@ export class BicycleModel {
   stopLoop(){
     if(this.#loopId == null) return;
     cancelAnimationFrame(this.#loopId)
-    this.#loopId = NaN;
+    this.#loopId = null;
   }
 
   spinner(t){
@@ -108,7 +108,7 @@ export class BicycleModel {
  * @param {Signal} input
  */
   update(input) {
-    this.#steering.setValue(this.#steering.getValue() + input.steeringAngle)
+    this.#steering.setValue(input.steeringAngle)
     this.#acceleration.setValue(this.#acceleration.getValue() + input.acceleration)
   }
 
@@ -120,7 +120,8 @@ export class BicycleModel {
       let delta = (timeStamp - this.#timeStamp) /1000;
       let newX = this.#position.x + this.#velocity.getValue() * Math.cos(this.#position.yaw) * delta;
       let newY = this.#position.y + this.#velocity.getValue() * Math.sin(this.#position.yaw) * delta;
-      let newAngle = this.#position.yaw + Math.abs(this.#velocity.getValue()) * Math.tan(this.#steering.getValue()) / this.#wheelBase * delta;
+      let newAngle = this.#position.yaw + Math.abs(this.#velocity.getValue()) * -Math.tan(this.#steering.getValue()) / this.#wheelBase * delta;
+      newAngle = newAngle>2*Math.PI ? newAngle -2*Math.PI : newAngle //reset angle if we turn more than a full rotation
       let newV = this.#velocity.getValue() + this.#acceleration.getValue() * delta - this.#friction*this.#velocity.getValue();
       
       let np = new Position(newX, newY,newAngle)

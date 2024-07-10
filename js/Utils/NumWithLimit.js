@@ -37,4 +37,9 @@ export class NumWithLimit{
    * @returns Number
    */
   getUpperLimit(){return this.#upperLimit}
+  
+  /**
+   * @returns Number
+   */
+  getLowerLimit(){return this.#lowerLimit}
 }

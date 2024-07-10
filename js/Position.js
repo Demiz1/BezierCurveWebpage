@@ -16,7 +16,7 @@
      * @param {Number} y 
      * @param {Number} yaw 
      */
-    constructor(x,y,yaw){
+    constructor(x,y,yaw=0){
       this.x = x;
       this.y = y;
       this.yaw = yaw

@@ -17,8 +17,7 @@ export class Gague{
     #gagueValueReadout
 
     /** 
-     * @param {NumWithLimit} limits 
-     * @param {()->Number} valueFetcher 
+     * @param {NumWithLimit} limits
      * @param {String} gagueId 
      */
     constructor(limits=NumWithLimit(0,0,240),gagueId){

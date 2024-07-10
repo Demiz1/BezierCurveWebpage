@@ -21,11 +21,8 @@ export class BezierCurve{
     /**
      * @constructor
      * @param {canvas} canvas the canvas to paint on
-     * @param {BezierPoint[]} anchorPoints the parent-points
      * @param {Number} p the progress-percentage the bezier curve has
-     * @param {Number} pointRadius
-     * @param {String} pointColour
-     * @param {Function} dataChangedCallback
+     * @param {BezierPoint[]} anchorPoints the parent-points
      * 
      */
     constructor(canvas, p = 0.33, anchorPoints = []){
@@ -87,6 +84,10 @@ export class BezierCurve{
         this.p = p
     }
 
+    getFinalCurvePoints(){
+      return this.#finalLinePositions;
+    }
+
     
     addAnchor(newAnchor){
       this.#anchorPoints.push(newAnchor);
@@ -116,14 +117,6 @@ export class BezierCurve{
             set.paint();
           });
         }
-      
-        // this is bad. revrite to fetch point from finalPointsSet.
-        this.#bezierPointSet[this.#bezierPointSet.length-1].points.forEach(finalPoint =>{
-          let circle = new Path2D();
-          circle.arc(finalPoint.x, finalPoint.y, 15, 0, 2 * Math.PI);
-          this.#canvas.fillStyle = 'green';
-          this.#canvas.fill(circle);
-        });
     }
 }
     

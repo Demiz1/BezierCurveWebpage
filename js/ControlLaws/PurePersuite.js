@@ -38,8 +38,11 @@ export class PurePersuite{
 
       this.#yawToTarget =  Math.atan2(this.#targetPoint.y-this.#origin.y,this.#targetPoint.x-this.#origin.x) - this.#origin.yaw;
       let error_temp = -(Math.atan2((this.#targetPoint.y-this.#origin.y),(this.#targetPoint.x-this.#origin.x)) - this.#origin.yaw)
-      this.#error = error_temp>Math.PI ? -2*Math.PI+error_temp : error_temp
+      error_temp = error_temp % (2*Math.PI)
+      error_temp = error_temp>Math.PI ? -2*Math.PI+error_temp : error_temp
+      error_temp = error_temp<-Math.PI ? 2*Math.PI+error_temp : error_temp
 
+      this.#error = error_temp
       //this.#yawToTarget = Math.atan2(this.#targetPoint.y-this.#origin.y,this.#targetPoint.x-this.#origin.x) - this.#origin.yaw
 
       if(distance<this.#lookAheadDistance){

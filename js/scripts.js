@@ -34,23 +34,24 @@ addDrawFunction(function () { carInstance.paint() })
 
 let speed_gauge = new Gague(new NumWithLimit(0,240,0),"speed_gauge")
 
-let targetPoints = [
-  new BezierPoint(ctx,1800,500,10,"blue"),
-  new BezierPoint(ctx,700,800,10,"blue"),
-  new BezierPoint(ctx,1300,200,10,"blue")
-]
-
-addDrawFunction(()=>{
-  targetPoints.forEach(e =>{
-    e.paint();
-  })
-})
+/** 
+ * @type {BezierCurve} bezierCurve
+*/
+let bezierCurve = new BezierCurve(ctx, 0.55, [
+  new BezierPoint(ctx, 599.5323981295926, 862.8650904033381, 5, "red"),
+  new BezierPoint(ctx, 1384.4355377421512, 171.90542420027816, 5, "red"),
+  new BezierPoint(ctx, 1753.5070140280561, 911.2656467315717, 5, "red"),
+  new BezierPoint(ctx, 2401.4696058784234, 68.42837273991655, 5, "red"),
+  new BezierPoint(ctx, 100.20040080160321, 166.89847009735743, 5, "red"),
+  new BezierPoint(ctx, 599.5323981295926, 862.8650904033381, 5, "red")]);
+bezierCurve.setDataChangedCallback(refreshCanvas)
+addDrawFunction(function () { bezierCurve.paint() })
 
 let index = 0;
 let lookAheadDistance = 200;
 let purePersuite = new PurePersuite(ctx,carInstance.getPosition.bind(carInstance), ()=>{
-  index=(index+1)%(targetPoints.length)
-  return targetPoints[index]
+  index=(index+1)%(bezierCurve.getFinalCurvePoints().length)
+  return bezierCurve.getFinalCurvePoints()[index]
 },lookAheadDistance)
 
 /**
@@ -100,21 +101,8 @@ let carcontroller = new CarKeyboardController(carMotionModel)
 //kickoff the purepersuite
 carMotionModel.update(runPurePersuit(carMotionModel))
 
-/** 
- * @type {BezierCurve} bezierCurve
-*/
-let bezierCurve = new BezierCurve(ctx, 0.33, [
-  new BezierPoint(ctx, 599.5323981295926, 862.8650904033381, 5, "red"),
-  new BezierPoint(ctx, 1384.4355377421512, 171.90542420027816, 5, "red"),
-  new BezierPoint(ctx, 1753.5070140280561, 911.2656467315717, 5, "red"),
-  new BezierPoint(ctx, 2401.4696058784234, 68.42837273991655, 5, "red"),
-  new BezierPoint(ctx, 100.20040080160321, 166.89847009735743, 5, "red"),
-  new BezierPoint(ctx, 599.5323981295926, 862.8650904033381, 5, "red")]);
-bezierCurve.setDataChangedCallback(refreshCanvas)
-addDrawFunction(function () { bezierCurve.paint() })
-
 document.getElementById('Checkbox1').addEventListener('click', function () {
-  bezierCurve.setBezierSetsVisible(document.getElementById('Checkbox1 ').checked)
+  bezierCurve.setBezierSetsVisible(document.getElementById('Checkbox1').checked)
 });
 
 document.getElementById('ResetBezierCurve').addEventListener("click", function () {

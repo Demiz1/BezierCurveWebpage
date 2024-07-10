@@ -43,8 +43,8 @@ export class BicycleModel {
   /**
    * @param {Position} initialPosition 
    * @param {NumWithLimit} velocity 
-   * @param {NumWithLimit} steering 
    * @param {NumWithLimit} acceleration 
+   * @param {NumWithLimit} steering 
    * @param {Number} wheelBase
    * @param {Number} friction  
    * @param {(BicycleModel) => void} [onStateUpdated=function(){}]
@@ -74,6 +74,10 @@ export class BicycleModel {
    */
   getVelocity(){
     return this.#velocity;
+  }
+
+  getSteeing(){
+    return this.#steering;
   }
 
   startLoop(){

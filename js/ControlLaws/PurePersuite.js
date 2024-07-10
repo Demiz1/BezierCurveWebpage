@@ -3,23 +3,25 @@ import { Position } from "../Position.js";
 export class PurePersuite{
     /**
      * @type {Number} #ICR
-     * @type {Canvas} #canvas
+     * @type {HTMLCanvasElement} #canvas
      */
     #ICR = 300;
     #canvas;
     #enablePainting = true;
     origin = new Position(0,0,0)
     targetPoint = new Position(1,1,2)
+    #originGetter;
+    #targetPoint;
 
     /**
      * @param {canvas} canvas 
-     * @param {()=>Signal} originGetter
-     * @param {()=>Signal} targetPoint 
+     * @param {()=>Position} originGetter
+     * @param {()=>Position} targetPoint 
      */
     constructor(canvas,originGetter = function(){},targetPoint = function(){}){
-        this.#canvas = canvas;
-        this.originGetter = originGetter;
-        this.targetPoint = targetPoint;
+      this.#canvas = canvas;
+      this.#originGetter = originGetter;
+      this.#targetPoint = targetPoint;
     }
 
     performPurePersuite(){
@@ -27,41 +29,36 @@ export class PurePersuite{
        * @type {Position} origin
        * @type {Position} targetPoint Yaw will be ignored
        */
-      this.origin = this.originGetter();
-      this.targetPoint = this.targetPoint();
+      this.origin = this.#originGetter();
+      this.targetPoint = this.#targetPoint();
 
       return {
-        distance : Math.sqrt((origin.x - targetPoint.x)^2 + (origin.y - targetPoint.y)^2),
-        yawToTarget : Math.atan2(targetPoint.y-origin.y,targetPoint.x-origin.x)
+        distance : Math.sqrt(Math.pow(this.origin.x - this.targetPoint.x,2) + Math.pow(this.origin.y - this.targetPoint.y,2)),
+        yawToTarget : Math.atan2(this.targetPoint.y-this.origin.y,this.targetPoint.x-this.origin.x) - this.origin.yaw
       }
     }
     
     nextTarget(){
-        return {x:1,y:2}
+      return {x:1,y:2}
     }
 
     /**
      * @returns {Position}
      */
     getError(){
-        return new Position(50,50,Math.PI/3)
+      return new Position(50,50,Math.PI/3)
     }
 
     paint(){
       if(!this.#enablePainting) return;
 
-      //origin
-      originPaint = new Path2D();
-      this.#canvas.fillStyle = 'green';
-      originPaint.arc(this.origin.x,this.origin.y,20,0,2*Math.PI);
-      this.#canvas.stroke(originPaint)
-      //target
-      targetPaint = new Path2D();
-      this.#canvas.fillStyle = 'yellow';
-      targetPaint.arc(this.targetPoint.x,this.targetPoint.y,20,0,2*Math.PI)
-      this.#canvas.stroke(targetPaint);
-      
-      this.canvas.setTransform(
+      let oldStrokeStyle = this.#canvas.strokeStyle;
+      let oldFillStyle = this.#canvas.fillStyle;
+
+      let currentSolution = this.performPurePersuite();
+
+      //set transform of the origin point.
+      this.#canvas.setTransform(
         Math.cos(this.origin.yaw),
         Math.sin(this.origin.yaw),
         -Math.sin(this.origin.yaw),
@@ -69,23 +66,44 @@ export class PurePersuite{
         this.origin.x,
         this.origin.y
       );
-      this.paintPurePersuite()
-      this.canvas.resetTransform();
-    }
+      this.#canvas.moveTo(0,0);
 
-    paintPurePersuite(){
-      
-      //turn arc
-      
+      //origin
+      let originPaint = new Path2D();
+      this.#canvas.fillStyle = 'green';
+      originPaint.arc(0,0,20,0,2*Math.PI);
+      this.#canvas.stroke(originPaint)
 
+      //LookaheadRadie
+      let Lradie = 200;
+      let circle = new Path2D();
+      this.#canvas.strokeStyle = 'blue'
+      circle.arc(0, 0, Lradie, 0, 2 * Math.PI);
+      this.#canvas.stroke(circle);
+
+      this.#canvas.moveTo(0,-Lradie/2);
+      this.#canvas.lineTo(0,Lradie/2);
+      this.#canvas.stroke();
+      this.#canvas.moveTo(0,0);
+
+      let relativeX = currentSolution.distance * Math.cos(currentSolution.yawToTarget);
+      let relativeY = currentSolution.distance * Math.sin(currentSolution.yawToTarget);
+      this.#canvas.lineTo(relativeX,relativeY);
+      this.#canvas.stroke();
+
+      //target
+      let targetPaint = new Path2D();
+      this.#canvas.fillStyle = 'yellow';
+      targetPaint.arc(relativeX,relativeY,20,0,2*Math.PI)
+      this.#canvas.stroke(targetPaint);
+      
+      this.#canvas.resetTransform();
+      this.#canvas.fillStyle = oldFillStyle;
+      this.#canvas.strokeStyle = oldStrokeStyle;
     }
 
     restOfPaint(){
-        //LookaheadRadie
-      let Lradie = 200;
-      let circle = new Path2D();
-      circle.arc(0, 0, Lradie, 0, 2 * Math.PI);
-      this.#canvas.stroke(circle);
+      
       // R point
       circle = new Path2D();
       this.#canvas.fillStyle = 'yellow';

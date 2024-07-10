@@ -1,4 +1,4 @@
-import { BicycleModel } from "./MotionModels/MotionModels.js";
+import { BicycleModel, Signal } from "./MotionModels/MotionModels.js";
 import { BezierPoint } from "./Bezier/BezierPoint.js";
 import { BezierCurve } from "./Bezier/BezierCurve.js";
 import { Car } from "./Car.js";
@@ -7,6 +7,7 @@ import { Position } from "./Position.js";
 import { PurePersuite } from "./ControlLaws/PurePersuite.js";
 import { NumWithLimit } from "./Utils/NumWithLimit.js";
 import { Gague } from "./UI_components/Gague.js";
+import { LevelIndicator } from "./UI_components/LevelIndicator.js";
 
 const canvas = document.getElementById('canvas');
 canvas.width = 2500;
@@ -33,26 +34,38 @@ addDrawFunction(function () { carInstance.paint() })
 
 let speed_gauge = new Gague(new NumWithLimit(0,240,0),"speed_gauge")
 
+let targetPoint = new BezierPoint(ctx,1800,500,20,"blue");
+addDrawFunction(()=>{targetPoint.paint()})
+
+let purePersuite = new PurePersuite(ctx,carInstance.getPosition.bind(carInstance), ()=>{
+  return new Position(targetPoint.x,targetPoint.y)
+})
+addDrawFunction(()=>{purePersuite.paint()})
+
+let steeringLimits = new NumWithLimit(0,Math.PI/6,-Math.PI/6);
+let steeingGUI = new LevelIndicator(steeringLimits,"#bar_indicator",(n)=>{return Math.round(n*180/Math.PI)});
 
 /**
- * 
  * @param {BicycleModel} newState 
  */
 function newStateCallback(newState){
   carInstance.setPosition(newState.getPosition()) 
   speed_gauge.set_gauge_speed(Math.abs(newState.getVelocity().getValue()))
+  steeingGUI.setValue(newState.getSteeing().getValue())
 }
+
 let carMotionModel = new BicycleModel(
   new Position(700, 700, 0),
   new NumWithLimit(0,100,-100),
   new NumWithLimit(0,20,-40),
-  new NumWithLimit(0,Math.PI/6,-Math.PI/6),
-  50,0.001,
+  steeringLimits,
+  50,
+  0.001,
   newStateCallback
   )
 let carcontroller = new CarKeyboardController(carMotionModel)
 
-//let purePersuite = new PurePersuite(ctx,function(){ return carInstance.getPosition()},)
+
 
 /** 
  * @type {BezierCurve} bezierCurve
@@ -106,6 +119,7 @@ document.addEventListener('keyup', function (event) {
   carcontroller.keyboardEvent(event, false)
 })
 
+/*
 let percentageLoop = 0
 function loop(){
   percentageLoop = (percentageLoop + 0.05) % 100;
@@ -115,3 +129,21 @@ function loop(){
   window.requestAnimationFrame(loop);
 }
 window.requestAnimationFrame(loop);
+*/
+
+function loop(){
+  setTimeout(function(){
+    let currentErr = purePersuite.performPurePersuite();
+    let currentVelocity = carMotionModel.getVelocity().getValue();
+    let signal = new Signal(0,currentErr.yawToTarget);
+    if(currentVelocity<60){
+      signal.acceleration = 10;
+    }
+    if(currentErr.distance < 200 && currentVelocity>1){
+      signal.acceleration = -100;
+    }
+    carMotionModel.update(signal)
+    loop();
+  },100)
+}
+loop()

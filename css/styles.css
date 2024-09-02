@@ -36,15 +36,14 @@ body {
 
 div#gagueContainer{
     position: absolute;
-    bottom: -2.5vw;
+    bottom: 0vw;
     right: 0;
-    display: flex;
+    display: grid;
 }
 
 div#speed_gauge {
     position: relative;
     margin: 0.1vw;
-    margin-bottom: 0%;
     width: 20vw;
     height: 20vw;
 }
@@ -117,12 +116,10 @@ div#speed_gauge div.label_wrapper p {
 div#bar_indicator{
     position: relative;
     height: 3vw;
-    width: 12vw;
     border: 3px solid black;
-    margin:  0vw 0.5vw 0vw 0.5vw;
+    margin:  0vw 0.5vw 0.5vw 0.5vw;
     padding: 0.1vw;
     transform-origin: 100% 100%;
-    transform: rotate(-90deg);
 }
 
 #bar_indicator P{
@@ -130,7 +127,6 @@ div#bar_indicator{
     margin: 0%;
     bottom: 0%;
     padding: inherit;
-    transform: rotate(90deg);
 }
 #bar_indicator P#left_value{ 
     left: 0;
@@ -155,7 +151,7 @@ div#bar_indicator{
     margin: auto;
     left: 0; 
     right: 0;
-    width: 10vw;
+    width: 90%;
     height: 2vw;
     border-radius: 10px;
     background-color: aqua;
